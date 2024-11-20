@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 import numpy as np
 
-import xgbost as xgb
+import xgboost as xgb
 from sklearn.preprocessing import StandardScaler, Binarizer
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -378,31 +378,7 @@ def analyze_rbf_feature_importance(model, X, y, feature_names, n_repeats=10):
     }
 
 
-def make_violin(features, ax, title):
-    """
-    Helper Function to create violin plot on given axis
 
-    """
-    if len(features) > 0:
-        melted = pd.melt(results_df[features], 
-                        var_name='Feature', 
-                        value_name='Importance')
-        feature_order = (melted.groupby('Feature')['Importance']
-                        .median()
-                        .sort_values(ascending=False)
-                        .index)
-        
-        sns.violinplot(data=melted,
-                        x='Feature',
-                        y='Importance',
-                        order=feature_order,
-                        inner='box',
-                        scale='width',
-                        ax=ax)
-        
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-        ax.set_title(title)
-        ax.grid(axis='y', linestyle='--', alpha=0.7)
 
 def plot_feature_importance_split(results_df, importance_threshold=0.05, figsize=(20, 12)):
     """
@@ -430,12 +406,37 @@ def plot_feature_importance_split(results_df, importance_threshold=0.05, figsize
     # Create subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
     
-    
+    def make_violin(features, ax, title):
+        """
+        Helper Function to create violin plot on given axis
+
+        """
+        if len(features) > 0:
+            melted = pd.melt(results_df[features], 
+                            var_name='Feature', 
+                            value_name='Importance')
+            feature_order = (melted.groupby('Feature')['Importance']
+                            .median()
+                            .sort_values(ascending=False)
+                            .index)
+            
+            sns.violinplot(data=melted,
+                            x='Feature',
+                            y='Importance',
+                            order=feature_order,
+                            inner='box',
+                            scale='width',
+                            ax=ax)
+            
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+            ax.set_title(title)
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            
     # Create plots
-    make_violin(high_importance, ax1, 
-               f'High Importance Features (>= {importance_threshold})')
-    make_violin(low_importance, ax2, 
-               f'Low Importance Features (< {importance_threshold})')
+    make_violin(features=high_importance, ax=ax1, 
+               title = f'High Importance Features (>= {importance_threshold})')
+    make_violin(features=low_importance, ax=ax2, 
+               title=f'Low Importance Features (< {importance_threshold})')
     
     plt.suptitle('Feature Importance Distributions Across Trials', 
                 y=1.02, fontsize=14)
@@ -446,7 +447,7 @@ def plot_feature_importance_split(results_df, importance_threshold=0.05, figsize
     stats_text = (f"Number of trials: {len(results_df)}\n"
                  f"High importance features: {len(high_importance)}\n"
                  f"Low importance features: {len(low_importance)}\n"
-                 f"Average Accuracy of trials: {np.round(np.mean(results['accuracy']),decimals=4)}")
+                 f"Average Accuracy of trials: {np.round(np.mean(results_df['accuracy']),decimals=4)}")
     
     plt.figtext(0.85, 0.98, stats_text, 
                 bbox=dict(facecolor='white', alpha=0.8),
