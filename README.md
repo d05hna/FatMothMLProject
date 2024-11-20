@@ -11,6 +11,7 @@ The CMP was recorded as Moths Fed from a robotic flower.
 The data for these Models is in two csv files:
   highdimensionbigdata.csv includes each Moth Trial and wingbeat but is very sparse in some of the spike timing dimensions
   23dimcountime.csv includes only the spike timing of the first spike for a given muscle and only includes wingbeats where all muscles fire (not sparse) 
+  shapimportance.csv inlcudes the normlized shap importance values for each of the dimensions (10 muscles count and timing) 
 
 The Models Trained Are:
   Extreme Gradient Boosting 
